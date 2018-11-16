@@ -1,0 +1,14 @@
+List<Map<DataFieldName, String>> data = new ArrayList<Map<DataFieldName, String>>();
+		
+
+		// Instance 1
+		Map<DataFieldName, String> map = new HashMap<DataFieldName, String>();
+		map.put( new DataFieldName("Anrede"), "Daffy duck");
+		map.put( new DataFieldName("Vorname"), "Plutext");
+		data.add(map);
+				
+		// Instance 2
+		map = new HashMap<DataFieldName, String>();
+		map.put( new DataFieldName("Anrede"), "Jason");
+		map.put(new DataFieldName("Vorname"), "Collins Street");
+		data.add(map);		
