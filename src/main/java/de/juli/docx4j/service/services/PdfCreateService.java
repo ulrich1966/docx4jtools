@@ -1,14 +1,16 @@
 package de.juli.docx4j.service.services;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 
+import org.docx4j.openpackaging.parts.Part;
+import org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart;
 import org.docx4j.wml.P;
 import org.docx4j.wml.Tbl;
 import org.docx4j.wml.TblPr;
@@ -24,28 +26,48 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import de.juli.docx4j.service.CreateService;
 import de.juli.docx4j.service.Service;
-import de.juli.docx4j.util.TestDaten;
+import de.juli.docx4j.service.model.Attribut;
 
 public class PdfCreateService extends Service implements CreateService {
 	private static final Logger LOG = LoggerFactory.getLogger(PdfCreateService.class);
 	private DocxReadService docxReader;
 	List<Child> elementList = new ArrayList<>();
+	private Document document;
+	private PdfWriter writer;
+	private Path target;
 
 	public PdfCreateService(Path path) throws Exception {
 		super(path);
 		docxReader = new DocxReadService(path);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Path create(Path target) throws Exception {
-		Document document = new Document();
-		PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(target.toFile()));
-		document.open();
+	
+	public void open(Path target) {
+		try {
+			this.document = new Document();
+			writer = PdfWriter.getInstance(document, new FileOutputStream(target.toFile()));
+			document.open();
+			this.target = target;
+		} catch (FileNotFoundException | DocumentException e) {
+			e.printStackTrace();
+		}
+	}
 
-		addAttrib(document);
+	@Override
+	public Path create() throws Exception {
+		if(document == null) {
+			throw new IllegalStateException("Kein Dokument vorhanden");
+		}
 		
-		Object read = docxReader.read();
+		List<Object> content = docxReader.read();
+		List<List<Child>> collect = docxReader.getHeaders().stream().map(e -> handleParts(e)).collect(Collectors.toList());
+		
+		collect.forEach(h -> { 
+			h.forEach(c -> LOG.debug("{}", c));
+		});
+		/*
+		 * 
 		List<Object> list = (List<Object>) read;
 
 		list.forEach(e -> docxContent(e));
@@ -61,13 +83,24 @@ public class PdfCreateService extends Service implements CreateService {
 				e1.printStackTrace();
 			}
 		});
+		 */
 		
 		
 		if(document.isOpen()) {
-			document.close();			
-		}
+			try {
+				document.close();			
+			} catch (Exception e) {
+				LOG.error("{}", e.getMessage());
+				return null;
+			}		
 		if(!writer.isCloseStream()) {
-			writer.close();			
+			try {
+				writer.close();			
+			} catch (Exception e) {
+				LOG.error("{}", e.getMessage());
+				return null;
+			}		
+		}
 		}
 		return target;
 	}
@@ -92,7 +125,7 @@ public class PdfCreateService extends Service implements CreateService {
 		// }
 	}
 
-	private void docxContent(Object value) {
+	private void docxContent(Object value, List<Child> childs) {
 		Child child = null;
 		if (value.getClass().equals(javax.xml.bind.JAXBElement.class)) {
 			javax.xml.bind.JAXBElement<?> jaxb = (JAXBElement<?>) value;
@@ -114,21 +147,21 @@ public class PdfCreateService extends Service implements CreateService {
 			// org.docx4j.wml.Tr elm = (Tr) value;
 			// elementList.add(elm);
 		}
-		elementList.add(child);
+		childs.add(child);
 	}
 
-	private void handleTableElement(Tbl element) {
+	private void handleTableElement(Tbl element, List<Child> childs) {
 		LOG.debug("{}", element);
 		TblPr tblPr = element.getTblPr();
-		docxContent(tblPr);
+		docxContent(tblPr, childs);
 	}
 
-	private void addAttrib(Document document) {
-		document.addAuthor("Ulrich Klood");
+	public void addAttrib(Document document, Attribut attibut) {
 		document.addCreationDate();
-		document.addCreator("Ulrich Klood");
-		document.addTitle("PDF");
-		document.addSubject("PDF Dokumentenerstellung");
+		document.addAuthor(attibut.getAuthor());
+		document.addCreator(attibut.getCreator());
+		document.addTitle(attibut.getTitle());
+		document.addSubject(attibut.getSubject());
 	}
 
 	private void addChunk(Document document, Child child) throws DocumentException {
@@ -136,4 +169,42 @@ public class PdfCreateService extends Service implements CreateService {
 		Chunk chunk = new Chunk(""+child);
 		document.add(chunk);
 	}
+
+	private List<Child> handleParts(Part part) {
+		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) {
+			org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart header = (HeaderPart) part;
+			List<Object> content = header.getContent();
+			List<Child> childs = new ArrayList<>();
+			content.forEach(e -> docxContent(e, childs));
+			return childs;
+		}
+		
+		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) {
+			
+		}
+		
+		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart) {
+			
+		}
+		return null;
+	}
+
+	// Getter / Setter
+
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
+	@Override
+	public void addAttrib(Attribut attibut) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
 }

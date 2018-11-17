@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.juli.docx4j.service.CreateService;
+import de.juli.docx4j.service.model.Attribut;
 import de.juli.docx4j.service.services.FieldPasteService;
 import de.juli.docx4j.service.services.PdfCreateService;
 import de.juli.docx4j.util.Executer;
@@ -37,10 +38,17 @@ public class PdfCreateServiceTest extends ServiceTest {
 				openProcess(Executer.DOCX_EXECUTER, docx.toString());
 
 			CreateService service = new PdfCreateService(docx);
-			Path pdf = service.create(target);
+			service.open(target);
+			Attribut attribut = new Attribut();
+			attribut.setAuthor("Uli");
+			attribut.setCreator("Uli");;
+			attribut.setSubject("Pdf creation");
+			attribut.setTitle("Pdf creation");
+			service.addAttrib(attribut);
+			Path pdf = service.create();
 			
 			setPdfOut(true);
-			if (pdfOut)
+			if (pdfOut && pdf != null)
 				openProcess(Executer.PDF_EXECUTER, pdf.toString());
 				
 		} catch (Exception e) {

@@ -1,6 +1,7 @@
 package de.juli.docx4j.service.services;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -8,9 +9,7 @@ import javax.xml.bind.JAXBException;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.exceptions.InvalidFormatException;
 import org.docx4j.openpackaging.parts.Part;
-import org.docx4j.openpackaging.parts.PartName;
 import org.docx4j.wml.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +28,10 @@ public class DocxReadService extends Service implements ReadService {
 	}
 	
 	@Override
-	public Object read() throws Exception {
+	public List<Object> read() throws Exception {
 		//MainDocumentPart root = service.getRootDocPart();
 		List<Object> content = super.service.getJaxbElement().getContent();
-		
+		//super.service.partNamesToList().forEach(e -> LOG.info("{}", e));
 		return content;	
 	}
 
@@ -66,17 +65,15 @@ public class DocxReadService extends Service implements ReadService {
 		return marshalString;
 	}
 
-	public Part getHeader() throws InvalidFormatException {
-		if(header == null) {
-			header = super.service.getParts().get(new PartName("/word/cover-header.xml"));
-		}
-		return header;
+	public List<Part> getHeaders() {
+		List<Part> parts = new ArrayList<>();
+		service.findHeaderParts().forEach((k,v) -> parts.add(v));
+		return parts;
 	}
 
-	public Part getFooter() throws InvalidFormatException {
-		if(footer == null) {
-			footer = super.service.getParts().get(new PartName("/word/cover-footer.xml"));
-		}
-		return footer;
+	public List<Part> getFooters() {
+		List<Part> parts = new ArrayList<>();
+		service.findFooterParts().forEach((k,v) -> parts.add(v));
+		return parts;
 	}
 }

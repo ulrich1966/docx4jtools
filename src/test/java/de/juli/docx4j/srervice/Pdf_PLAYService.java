@@ -24,18 +24,30 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import de.juli.docx4j.service.CreateService;
 import de.juli.docx4j.service.Service;
+import de.juli.docx4j.service.model.Attribut;
 
 public class Pdf_PLAYService extends Service implements CreateService {
 	private static final Logger LOG = LoggerFactory.getLogger(Pdf_PLAYService.class);
 	private Path source;
+	private Path target;
 
 	public Pdf_PLAYService(Path path) throws Exception {
 		super(null);
 		source = path;
 	}
+	
+	@Override
+	public void addAttrib(Attribut attibut) {
+		
+	}
+	
+	@Override
+	public void open(Path target) {
+		this.target = target;
+	}
 
 	@Override
-	public Path create(Path target) throws DocumentException, IOException {
+	public Path create() throws DocumentException, IOException {
 		Document document = new Document();
 		PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(target.toFile()));
 
@@ -111,5 +123,6 @@ public class Pdf_PLAYService extends Service implements CreateService {
 		document.addTitle("Test für PDF");
 		document.addSubject("Ein Test der PDF Dokumentenerstellung");
 	}
+
 
 }

@@ -25,7 +25,8 @@ public class DocCreateServiceTest {
 		Path target = AppConfig.getRootAsPath().resolve("docs").resolve("test.docx");
 		LOG.debug(""+target);
 		DocxCreateService service = new  DocxCreateService(target);
-			service.create(target);
+		service.open(target);
+		service.create();
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

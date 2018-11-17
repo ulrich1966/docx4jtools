@@ -59,7 +59,8 @@ public class Docx4JServiceTest extends ServiceTest {
 
 	private Path convertToHtml(Path source, Path target) throws Exception {
 		ConvertHTMLService web = new ConvertHTMLService(source);
-		Path html = web.create(target);
+		web.open(target);
+		Path html = web.create();
 		return html;
 	}
 

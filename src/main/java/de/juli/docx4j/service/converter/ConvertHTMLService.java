@@ -15,10 +15,12 @@ import org.slf4j.LoggerFactory;
 
 import de.juli.docx4j.service.CreateService;
 import de.juli.docx4j.service.Service;
+import de.juli.docx4j.service.model.Attribut;
 
 public class ConvertHTMLService extends Service implements CreateService {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(ConvertHTMLService.class);
+	private Path target;
 	
 	public ConvertHTMLService(Path source) throws Exception {
 		super(source);
@@ -26,7 +28,7 @@ public class ConvertHTMLService extends Service implements CreateService {
 	
 	
 	@Override
-	public Path create(Path target) throws Exception {
+	public Path create() throws Exception {
 		XWPFDocument document = new XWPFDocument(new FileInputStream(source.toFile()));
 		XHTMLOptions options = XHTMLOptions.create();
 		
@@ -35,5 +37,15 @@ public class ConvertHTMLService extends Service implements CreateService {
 		options.URIResolver(new FileURIResolver(imageFolder));
 		XHTMLConverter.getInstance().convert(document, new FileOutputStream(target.toFile()), options);
 		return target;
+	}
+
+
+	@Override
+	public void addAttrib(Attribut attibut) {
+	}
+
+	@Override
+	public void open(Path target) {
+		this.target = target;
 	}
 }
