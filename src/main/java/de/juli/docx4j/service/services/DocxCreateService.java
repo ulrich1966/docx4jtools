@@ -5,11 +5,11 @@ import java.nio.file.Path;
 
 import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 
-import de.juli.docx4j.service.CreateService;
+import de.juli.docx4j.service.Create;
 import de.juli.docx4j.service.Service;
 import de.juli.docx4j.service.model.Attribut;
 
-public class DocxCreateService extends Service implements CreateService{
+public class DocxCreateService extends Service implements Create{
 
 	private Path target;
 

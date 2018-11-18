@@ -22,11 +22,11 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 
-import de.juli.docx4j.service.CreateService;
+import de.juli.docx4j.service.Create;
 import de.juli.docx4j.service.Service;
 import de.juli.docx4j.service.model.Attribut;
 
-public class Pdf_PLAYService extends Service implements CreateService {
+public class Pdf_PLAYService extends Service implements Create {
 	private static final Logger LOG = LoggerFactory.getLogger(Pdf_PLAYService.class);
 	private Path source;
 	private Path target;

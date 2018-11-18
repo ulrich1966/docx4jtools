@@ -13,11 +13,11 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.juli.docx4j.service.CreateService;
+import de.juli.docx4j.service.Create;
 import de.juli.docx4j.service.Service;
 import de.juli.docx4j.service.model.Attribut;
 
-public class ConvertHTMLService extends Service implements CreateService {
+public class ConvertHTMLService extends Service implements Create {
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(ConvertHTMLService.class);
 	private Path target;

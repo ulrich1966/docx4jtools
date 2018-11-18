@@ -25,10 +25,9 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.juli.docx4j.service.CreateService;
-import de.juli.docx4j.service.Service;
 import de.juli.docx4j.service.model.Attribut;
 
-public class PdfCreateService extends Service implements CreateService {
+public class PdfCreateService extends CreateService {
 	private static final Logger LOG = LoggerFactory.getLogger(PdfCreateService.class);
 	private DocxReadService docxReader;
 	List<Child> elementList = new ArrayList<>();
@@ -42,8 +41,8 @@ public class PdfCreateService extends Service implements CreateService {
 	}
 
 	@Override
-	
-	public void open(Path target) {
+	public void open(Path target) throws FileNotFoundException {
+		super.open(target);
 		try {
 			this.document = new Document();
 			writer = PdfWriter.getInstance(document, new FileOutputStream(target.toFile()));
