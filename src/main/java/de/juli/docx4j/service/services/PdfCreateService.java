@@ -55,57 +55,75 @@ public class PdfCreateService extends CreateService {
 
 	@Override
 	public Path create() throws Exception {
-		if(document == null) {
+		if (document == null) {
 			throw new IllegalStateException("Kein Dokument vorhanden");
 		}
-		
+
 		List<Object> content = docxReader.read();
 		List<List<Child>> collect = docxReader.getHeaders().stream().map(e -> handleParts(e)).collect(Collectors.toList());
-		
-		collect.forEach(h -> { 
-			h.forEach(c -> LOG.debug("{}", c));
+
+		collect.forEach(h -> {
+			h.forEach(c -> itteratePart(c));
 		});
+		
+		System.out.println();
+		
+		String txt = docxReader.docxText();
+		LOG.info("{}", txt);
+
+		System.out.println();
+		
+		docxReader.play();
+		
 		/*
 		 * 
-		List<Object> list = (List<Object>) read;
-
-		list.forEach(e -> docxContent(e));
-		elementList.stream().forEach(e -> showCildInfo(e));
-		
-		Map<String, String> map = TestDaten.testFiedsAsString();
-		Collection<String> values = map.values();	
-		
-		elementList.stream().forEach(e -> {
-			try {
-				append(document, e);
-			} catch (DocumentException e1) {
-				e1.printStackTrace();
-			}
-		});
+		 * List<Object> list = (List<Object>) read;
+		 * 
+		 * list.forEach(e -> docxContent(e)); elementList.stream().forEach(e ->
+		 * showCildInfo(e));
+		 * 
+		 * Map<String, String> map = TestDaten.testFiedsAsString(); Collection<String>
+		 * values = map.values();
+		 * 
+		 * elementList.stream().forEach(e -> { try { append(document, e); } catch
+		 * (DocumentException e1) { e1.printStackTrace(); } });
 		 */
-		
-		
-		if(document.isOpen()) {
+
+		if (document.isOpen()) {
 			try {
-				document.close();			
+				document.close();
 			} catch (Exception e) {
 				LOG.error("{}", e.getMessage());
 				return null;
-			}		
-		if(!writer.isCloseStream()) {
-			try {
-				writer.close();			
-			} catch (Exception e) {
-				LOG.error("{}", e.getMessage());
-				return null;
-			}		
-		}
+			}
+			if (!writer.isCloseStream()) {
+				try {
+					writer.close();
+				} catch (Exception e) {
+					LOG.error("{}", e.getMessage());
+					return null;
+				}
+			}
 		}
 		return target;
 	}
 
+	private Object itteratePart(Child child) {
+		LOG.debug("{}: {}", child.getClass(), child);
+		if (child instanceof org.docx4j.wml.P) {
+			org.docx4j.wml.P element = (P) child;
+			List<Object> content = element.getContent();
+			if(content != null && content.size() >=1) {
+				content.forEach(c-> itteratePart((Child) c));
+			} else {
+				LOG.info("no more elements");				
+			}
+		}
+		return null;
+	}
+
 	private Paragraph append(Document document, Child child) throws DocumentException {
-		return  append(document, String.format("%s", child));
+		return append(document, String.format("%s", child));
 	}
 
 	private Paragraph append(Document document, String value) throws DocumentException {
@@ -130,7 +148,7 @@ public class PdfCreateService extends CreateService {
 			javax.xml.bind.JAXBElement<?> jaxb = (JAXBElement<?>) value;
 			if (jaxb.getValue() instanceof org.docx4j.wml.Tbl) {
 				org.docx4j.wml.Tbl element = (Tbl) jaxb.getValue();
-				//handleTableElement(element);
+				// handleTableElement(element);
 				child = element;
 			}
 		}
@@ -164,26 +182,26 @@ public class PdfCreateService extends CreateService {
 	}
 
 	private void addChunk(Document document, Child child) throws DocumentException {
-		//Font font = FontFactory.getFont(FontFactory.COURIER, 16, Color.BLACK);
-		Chunk chunk = new Chunk(""+child);
+		// Font font = FontFactory.getFont(FontFactory.COURIER, 16, Color.BLACK);
+		Chunk chunk = new Chunk("" + child);
 		document.add(chunk);
 	}
 
 	private List<Child> handleParts(Part part) {
-		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) {
+		if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart) {
 			org.docx4j.openpackaging.parts.WordprocessingML.HeaderPart header = (HeaderPart) part;
 			List<Object> content = header.getContent();
 			List<Child> childs = new ArrayList<>();
 			content.forEach(e -> docxContent(e, childs));
 			return childs;
 		}
-		
-		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) {
-			
+
+		if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FooterPart) {
+
 		}
-		
-		if(part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart) {
-			
+
+		if (part instanceof org.docx4j.openpackaging.parts.WordprocessingML.FontTablePart) {
+
 		}
 		return null;
 	}
@@ -201,9 +219,7 @@ public class PdfCreateService extends CreateService {
 	@Override
 	public void addAttrib(Attribut attibut) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
-	
+
 }

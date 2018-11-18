@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
+import org.docx4j.jaxb.XPathBinderAssociationIsPartialException;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.wml.Document;
@@ -53,6 +54,16 @@ public class DocxReadService extends Service implements ReadService {
 	public void play() throws Docx4JException {
 		Object target = XmlUtils.unwrap(source);
 		LOG.info("{}", target);
+	}
+
+	public String docxText() throws XPathBinderAssociationIsPartialException, JAXBException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.service.parseHeaderText());
+		sb.append("");
+		sb.append(super.service.parseBodyText());
+		sb.append("");
+		sb.append(super.service.parseFooterText());
+		return sb.toString();
 	}
 
 	public String getMarshalString() {

@@ -30,7 +30,7 @@ public class PdfCreateServiceTest extends ServiceTest {
 	public void test() {
 		try {
 			// LOG.debug("{}", ${file});
-			String[] files = new String[] {"ansch.docx", "converttxt.docx", "headertest.docx"};
+			String[] files = new String[] {"ansch.docx", "converttxt.docx", "headerread.docx"};
 
 			Path target = DOC_ROOT.resolve("test_pdf.pdf");
 			Path docx = DOC_ROOT.resolve(files[2]);
@@ -47,7 +47,7 @@ public class PdfCreateServiceTest extends ServiceTest {
 
 			setPdfOut(true);
 			if (pdfOut && pdf != null)
-				openProcess(Executer.PDF_EXECUTER, pdf.toString());
+				openProcess(Executer.PDF_EXECUTER_LT, pdf.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
