@@ -47,7 +47,7 @@ public class PdfCreateServiceTest extends ServiceTest {
 
 			setPdfOut(true);
 			if (pdfOut && pdf != null)
-				openProcess(Executer.PDF_EXECUTER_LT, pdf.toString());
+				openProcess(Executer.PDF_EXECUTER, pdf.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();

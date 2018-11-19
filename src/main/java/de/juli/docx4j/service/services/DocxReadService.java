@@ -2,7 +2,9 @@ package de.juli.docx4j.service.services;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import de.juli.docx4j.service.ReadService;
 import de.juli.docx4j.service.Service;
+import javafx.beans.binding.StringBinding;
 
 public class DocxReadService extends Service implements ReadService {
 	private static final Logger LOG = LoggerFactory.getLogger(DocxReadService.class);
@@ -56,14 +59,12 @@ public class DocxReadService extends Service implements ReadService {
 		LOG.info("{}", target);
 	}
 
-	public String docxText() throws XPathBinderAssociationIsPartialException, JAXBException {
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.service.parseHeaderText());
-		sb.append("");
-		sb.append(super.service.parseBodyText());
-		sb.append("");
-		sb.append(super.service.parseFooterText());
-		return sb.toString();
+	public Map<String, StringBuilder> docxText() throws XPathBinderAssociationIsPartialException, JAXBException {
+		Map<String, StringBuilder> map = new HashMap<>();
+		map.put("head", super.service.parseHeaderText());
+		map.put("body", super.service.parseBodyText());
+		map.put("footer", super.service.parseFooterText());
+		return map;
 	}
 
 	public String getMarshalString() {

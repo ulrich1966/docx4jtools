@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
@@ -68,8 +69,10 @@ public class PdfCreateService extends CreateService {
 		
 		System.out.println();
 		
-		String txt = docxReader.docxText();
-		LOG.info("{}", txt);
+		for (Entry<String, StringBuilder> entry : docxReader.docxText().entrySet()) {
+			String txt = entry.getValue().toString();
+			LOG.info("{}", txt);			
+		}
 
 		System.out.println();
 		
